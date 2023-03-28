@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext.jsx";
-
+import { useAuth } from "../../contexts/AuthContext.jsx";
+import GoogleButton from "../buttons/GoogleButton.jsx";
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const { login } = useAuth();
+    const { login, signInWithGoogle, signInWithGoogleRedirect } = useAuth();
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -24,10 +24,26 @@ const Login = () => {
         setLoading(false);
     };
 
+    const handleGoogleSignIn = async () => {
+        try {
+            setError("");
+            setLoading(true);
+            //if mobile browser, use redirect, otherwise use popup
+            if (window.innerWidth <= 500) {
+                await signInWithGoogleRedirect();
+            } else {
+                await signInWithGoogle();
+            }
+            navigate("/authDetails");
+        } catch (error) {
+            console.log(error);
+            setError("Failed to login");
+        }
+    };
     return (
         <div className="font-bold border-2 border-slate-300 rounded shadow-md p-4">
-            <form onSubmit={handleLogin} className="flex flex-col gap-4">
-                <h2>Log In</h2>
+            <div className="flex flex-col gap-2">
+                <h2 className="text-2xl">Log In</h2>
                 <input
                     className="border-2 border-black p-2"
                     type="text"
@@ -42,16 +58,19 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <div>
-                    <Link to="/forgot-password">Forgot Password?</Link>
+                <div className="float-right">
+                    <Link className="text-sm" to="/forgot-password">
+                        Forgot Password?
+                    </Link>
                 </div>
                 {error && <p className="text-red-500">{error}</p>}
-                <button className="bg-slate-400" type="submit">
+                <button onClick={handleLogin} className="bg-slate-400" type="submit">
                     Login
                 </button>
-            </form>
-            <div>
-                Don't have an account? <Link to="/signup">Sign Up</Link>
+                <GoogleButton type="Log In" onClick={handleGoogleSignIn} className="my-2"></GoogleButton>
+                <div>
+                    Don't have an account? <Link to="/signup">Sign Up</Link>
+                </div>
             </div>
         </div>
     );

@@ -1,12 +1,12 @@
-import Login from "./components/Login";
-import SignUp from "./components/SignUp";
+import Login from "./components/auth/Login";
+import SignUp from "./components/auth/SignUp";
 import "./App.css";
 import AuthDetails from "./components/AuthDetails";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import ForgotPassword from "./components/ForgotPassword";
-import UpdateProfile from "./components/UpdateProfile";
+import ForgotPassword from "./components/auth/ForgotPassword";
+import UpdateProfile from "./components/auth/UpdateProfile";
 function App() {
     return (
         <div className="App flex flex-col gap-4">

@@ -1,14 +1,14 @@
 import React, { useState, useRef } from "react";
-import { useAuth } from "../contexts/AuthContext.jsx";
+import { useAuth } from "../../contexts/AuthContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
-
+import GoogleButton from "../buttons/GoogleButton.jsx";
 const SignUp = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const { signUp } = useAuth();
+    const { signUp, signInWithGoogle, signInWithGoogleRedirect } = useAuth();
     const navigate = useNavigate();
 
     let handleSubmit = async (e) => {
@@ -26,6 +26,22 @@ const SignUp = () => {
             setError("Failed to create an account");
         }
         setLoading(false);
+    };
+
+    const handleGoogleSignIn = async () => {
+        try {
+            setError("");
+            setLoading(true);
+            if (window.innerWidth <= 500) {
+                await signInWithGoogleRedirect();
+            } else {
+                await signInWithGoogle();
+            }
+            navigate("/authDetails");
+        } catch (error) {
+            console.log(error);
+            setError("Failed to login");
+        }
     };
 
     return (
@@ -58,6 +74,7 @@ const SignUp = () => {
                     Sign Up
                 </button>
             </form>
+            <GoogleButton type="Sign Up" onClick={handleGoogleSignIn} className="my-2"></GoogleButton>
             <div>
                 Already have an account? <Link to="/login">Log in</Link>
             </div>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { auth } from "../firebase.js";
 import {
     sendPasswordResetEmail,
@@ -9,6 +9,7 @@ import {
     updatePassword,
     signInWithPopup,
     GoogleAuthProvider,
+    signInWithRedirect,
 } from "firebase/auth";
 const AuthContext = createContext();
 
@@ -41,26 +42,13 @@ export const AuthProvider = ({ children }) => {
         return updatePassword(auth.currentUser, password);
     };
 
-    signInWithPopup(auth, provider)
-        .then((result) => {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
-            // The signed-in user info.
-            const user = result.user;
-            // IdP data available using getAdditionalUserInfo(result)
-            // ...
-        })
-        .catch((error) => {
-            // Handle Errors here.
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // The email of the user's account used.
-            const email = error.customData.email;
-            // The AuthCredential type that was used.
-            const credential = GoogleAuthProvider.credentialFromError(error);
-            // ...
-        });
+    const signInWithGoogle = () => {
+        return signInWithPopup(auth, provider);
+    };
+
+    const signInWithGoogleRedirect = () => {
+        return signInWithRedirect(auth, provider);
+    };
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);
@@ -76,6 +64,8 @@ export const AuthProvider = ({ children }) => {
         logout,
         resetPassword,
         updateUserPassword,
+        signInWithGoogle,
+        signInWithGoogleRedirect,
     };
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
